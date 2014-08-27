@@ -30,6 +30,9 @@ module.exports = {
   getWebhooksURL: function() {
     return URL + '/' + this.getVersion();
   },
+  getPaymentsURL: function() {
+    return URL + '/' + this.getVersion();
+  },
   getAddress: function(address, cb) {
     request({
       method: 'GET',
@@ -255,6 +258,24 @@ module.exports = {
       auth: this.getAuth(),
     }, function(err, msg, resp) {
       cb(err, JSON.parse(resp));
+    });
+  },
+  createPaymentAddress: function(opts, cb) {
+    if(opts['destination_address'] == null) {
+      cb('Missing destination address parameter', null);
+    } 
+    if(opts['block_chain'] == null) {
+      opts['block_chain'] = this.getBlockChain();
+    }
+    request({
+      method: 'POST',
+      uri: this.getPaymentsURL() + '/payments',
+      strictSSL: true,
+      cert: PEM,
+      auth: this.getAuth(),
+      json: opts
+    }, function(err, msg, resp) {
+      cb(err, resp);
     });
   }
 };
